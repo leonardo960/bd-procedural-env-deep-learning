@@ -1,0 +1,5 @@
+keras
+pyswip
+pygame
+guizero
+numpy
