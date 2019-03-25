@@ -87,10 +87,11 @@ class Environment():
     floor = Gameobject(0, 0, 0, 0, 0, FLOOR)
     agentStartX = 198 #per il reset quando muore
     agentStartY = 268 #per il reset quando muore
-    agent = Agent(agentStartX, agentStartY, 8, 8, 0, AGENT, 90)
-    objectivePositions1 = [(180,160),(280,160),(260,340),(70, 300)]
-    objectivePositions2 = [(220,230),(220,290),(170,290),(170,230)]
-    objective = Gameobject(objectivePositions2[random.randrange(len(objectivePositions2)-1)][0], objectivePositions2[random.randrange(len(objectivePositions2)-1)][1], 15, 15, 0, OBJECTIVE)
+    agent = Agent(9999, 9999, 8, 8, 0, AGENT, 90)
+    objectivePositions1 = [(160,240),(220,240),(230,280),(170, 320)]
+    objectivePositions2 = [(270,190),(250,325),(110,290),(160,170)]
+    objectivePositions3 = [(270,190),(250,325),(110,290),(160,170),(160,240),(220,240),(230,280),(170, 320)]
+    objective = Gameobject(9800, 9800, 15, 15, 0, OBJECTIVE)
     isAgentLookingAtObjective = False
     spritesLoaded = False
     
@@ -351,7 +352,6 @@ class Environment():
                             pygame.draw.circle(self.screen, (255,0,0), chosenPoint, 2)
                 if min(testDistances) < 0.049:
                     print("attivazione avoidance")
-            self.isAgentColliding()
             if self.agent.sprite.rect.colliderect(self.objective.sprite.rect):
                 self.resetObjective()
                 score += 1
@@ -365,7 +365,7 @@ class Environment():
     def runTraining(self):
         state_size = 40
         slamAgent = SLAMAgent(state_size, 3)
-        slamAgent.load("pesi task medio", 0.48560427251675453) 
+        #slamAgent.load("test", 0.19) 
         speed = 2
         frames = 1500
         for i in range(1,10001): #10k episodi
@@ -491,9 +491,9 @@ class Environment():
                     if done:
                         break
             print("Episodio {}/{}: fine al frame {}/{}, score: {}, random: {}%".format(i,10000,frameCount,frames, score, int((randomActions * 100)/frameCount)))
-            # print("Inizio replay agente.")
-            # slamAgent.replay(500)
-            # print("Replay agente completato.")
+            print("Inizio replay agente.")
+            slamAgent.replay(500)
+            print("Replay agente completato.")
         print("Salvataggio pesi...")
         slamAgent.save("test")
         print("Salvataggio pesi completato.")
@@ -538,7 +538,7 @@ class Environment():
         randomNextX = self.objective.sprite.rect.x
         randomNextY = self.objective.sprite.rect.y
         while randomNextX == self.objective.sprite.rect.x and randomNextY == self.objective.sprite.rect.y:
-            randomNextPosition = self.objectivePositions2[random.randrange(0,len(self.objectivePositions2))]
+            randomNextPosition = self.objectivePositions3[random.randrange(0,len(self.objectivePositions3))]
             randomNextX = randomNextPosition[0]
             randomNextY = randomNextPosition[1]
         self.objective.sprite.rect.x = randomNextX
@@ -726,6 +726,8 @@ class Environment():
         self.SINK_IMAGE = pygame.image.load('textures/sink_texture.png').convert_alpha()
         self.DOOR_IMAGE = pygame.image.load('textures/door_texture.png').convert_alpha()
         self.FLOOR_IMAGE = pygame.image.load('textures/floor_texture.png').convert_alpha()
+        self.AGENT_IMAGE = pygame.image.load('textures/agent_texture_mockup.png').convert_alpha()
+        self.OBJECTIVE_IMAGE = pygame.image.load('textures/objective_texture_mockup.png').convert_alpha()
         #---------------------------------------------------------------------
         self.typeToSprite = {
             BEDROOM : self.BEDROOM_IMAGE,
@@ -745,9 +747,24 @@ class Environment():
             SHOWER : self.SHOWER_IMAGE,
             SINK : self.SINK_IMAGE,
             DOOR : self.DOOR_IMAGE,
-            FLOOR : self.FLOOR_IMAGE
+            FLOOR : self.FLOOR_IMAGE,
+            AGENT: self.AGENT_IMAGE,
+            OBJECTIVE: self.OBJECTIVE_IMAGE
         }
-
+        
+        #Inizializzazione rect e image dell'agente
+        agentSprite = pygame.sprite.Sprite()
+        agentSprite.image = pygame.transform.scale(self.typeToSprite[AGENT], (int(self.agent.width), int(self.agent.height)))
+        agentSprite.rect = pygame.Rect(self.agent.x, self.agent.y, self.agent.width, self.agent.height)
+        self.agent.sprite = agentSprite
+        self.agent.image = self.agent.sprite.image
+        
+        #Inizializzazione rect e image dell'obiettivo
+        objectiveSprite = pygame.sprite.Sprite()
+        objectiveSprite.image = pygame.transform.scale(self.typeToSprite[OBJECTIVE], (int(self.objective.width), int(self.objective.height)))
+        objectiveSprite.rect = pygame.Rect(self.objective.x, self.objective.y, self.objective.width, self.objective.height)
+        self.objective.sprite = objectiveSprite
+        
         headVariables = ""
         predicateHead = "generateEnvironment(EnvWidth, EnvHeight, "
         queryStart = "generateEnvironment("+str(self.envWidth)+", "+str(self.envHeight)+", "
@@ -1330,7 +1347,8 @@ class Environment():
         predicateBody += ", !"
         # no il punto . dopo il predicato
 
-        # print(predicateHead + predicateBody)
+        print("Il predicato per generare il bagno è: ")
+        print(predicateHead + predicateBody)
         self.prolog.assertz(predicateHead + predicateBody)
 
         for sol in self.prolog.query(query):
@@ -1664,8 +1682,8 @@ class Environment():
         predicateBody += ", !"
         # no il punto . dopo il predicato
 
-        #print("Il predicato per generare la camera da letto "+str(bedroom.index)+" è:")
-        # print(predicateHead + predicateBody)
+        print("Il predicato per generare la camera da letto "+str(bedroom.index)+" è:")
+        print(predicateHead + predicateBody)
         self.prolog.assertz(predicateHead + predicateBody)
 
         for sol in self.prolog.query(query):
@@ -2088,8 +2106,8 @@ class Environment():
         predicateBody += ", !"
         # no il punto . dopo il predicato
 
-        # print("Il predicato per generare le cucine è:")
-        # print(predicateHead + predicateBody)
+        print("Il predicato per generare le cucine è:")
+        print(predicateHead + predicateBody)
         self.prolog.assertz(predicateHead + predicateBody)
 
         for sol in self.prolog.query(query):
@@ -2316,7 +2334,7 @@ class Environment():
 
         # print(predicateHead + predicateBody)
         self.prolog.assertz(predicateHead + predicateBody)
-        # print("La query per la hall "+str(hall.index)+" è : " + query)
+        print("La query per la hall "+str(hall.index)+" è : " + predicateHead + predicateBody)
         for sol in self.prolog.query(query):
             for i in range(0, cupboardNumber):
                 cupboardSprite = pygame.sprite.Sprite()

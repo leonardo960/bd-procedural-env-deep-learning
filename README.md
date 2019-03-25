@@ -32,9 +32,11 @@ performing the same task on a new one which it has never seen before.
 ### Installation
 Please make sure these dependencies are installed first:
 - Keras
-- Pyswip
+- Pyswip (so the latest version of SWI-Prolog as well)
 - Pygame
 - Guizero
 - Numpy
 
 Then clone our repo and simply run Main.py.
+
+For a quick glance at what an environment looks like Prolog wise, JSON wise and graphically, please see the example1 in the environments folder.
