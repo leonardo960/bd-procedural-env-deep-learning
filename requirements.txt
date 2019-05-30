@@ -3,3 +3,4 @@ pyswip
 pygame
 guizero
 numpy
+tensorflow
