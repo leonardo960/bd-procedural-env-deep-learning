@@ -1,6 +1,9 @@
 keras
 pyswip
+swiplserver
 pygame
 guizero
 numpy
+pandas
 tensorflow
+cuda-python

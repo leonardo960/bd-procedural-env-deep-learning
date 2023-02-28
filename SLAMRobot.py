@@ -1,10 +1,8 @@
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten
-from keras.optimizers import Adam
+import tensorflow as tf
 import numpy as np
 from collections import deque
 import random
-
+from datetime import datetime
 
 class SLAMAgent:
     def __init__(self, state_size, action_size):
@@ -20,21 +18,26 @@ class SLAMAgent:
         self.learning_rate_decay = 0.01
         self.randomActions = [0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
         self.model = self._build_model()
+        
+        self.reward = []
 
     def _build_model(self):
-        # Neural Net for Deep-Q learning Model
-        model = Sequential()
-        model.add(Dense(25, input_shape=(self.state_size, 3), activation='relu'))
-        model.add(Flatten())
-        model.add(Dense(50, activation='relu'))
-        model.add(Dense(100, activation='relu'))
-        model.add(Dense(50, activation='relu'))
-        model.add(Dense(25, activation='relu'))
-        model.add(Dense(self.action_size, activation='softmax'))
-        model.compile(loss='mse',
-                      optimizer=Adam(lr=self.learning_rate,decay=self.learning_rate_decay))
+        model = tf.keras.Sequential([
+        tf.keras.layers.Dense(units=25, activation='relu', input_shape=(self.state_size, 3)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(units=50, activation='relu'),
+        tf.keras.layers.Dense(units=100, activation='relu'),
+        tf.keras.layers.Dense(units=50, activation='relu'),
+        tf.keras.layers.Dense(units=25, activation='relu'),
+        tf.keras.layers.Dense(units=self.action_size, activation='softmax')])
+        
+        # Compile the model with learning rate
+        optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate, decay=self.learning_rate_decay)
+        
+        model.compile(optimizer=optimizer, loss='mse', metrics=['accuracy'])
+        
         return model
-
+        
     def remember(self, state, action, reward, next_state, done):
             if reward == 0:
                 self.memory.append((state, action, reward, next_state, done))
@@ -66,8 +69,7 @@ class SLAMAgent:
         if len(self.memory) > batch_size:
             minibatch.extend(random.sample(self.memory, batch_size-len(minibatch)))
         else:
-            minibatch.extend(random.sample(self.memory, len(self.memory)-len(minibatch)))
-        
+            minibatch.extend(random.sample(self.memory, len(self.memory)-len(minibatch)))       
         
             
         for state, action, reward, next_state, done in minibatch:
@@ -77,14 +79,18 @@ class SLAMAgent:
                           np.amax(self.model.predict(next_state)[0]))
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+            #------ HERE the net will be fit ------#
+            #self.model.fit(state, target_f, epochs=1, verbose=0)
+            self.model.fit(state, target_f, epochs=10, verbose=1)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-        print("epsilon attuale: " + str(self.epsilon))
+            
+        #print((f"REPLAY actual epsilon: {str(self.reward)}"))
+        print((f"REPLAY actual epsilon: {str(self.epsilon)}"))
 
     def save(self, fn):
         self.model.save(fn) #fn è il file name del file dei pesi dei neuroni alla fine del training
-        print("epsilon attuale: " + str(self.epsilon))
+        print((f"actual epsilon: {str(self.epsilon)}"))
 
     def load(self, name, lastRandomValue):
         self.model.load_weights(name)
