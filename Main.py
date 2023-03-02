@@ -60,13 +60,16 @@ GREY = (150, 150, 150)
 LIGHT_GREEN = (150, 255, 150)
 
 class Environment():
+    
     floor = Gameobject(0, 0, 0, 0, 0, FLOOR)
     agentStartX = 198 #per il reset quando muore
     agentStartY = 268 #per il reset quando muore
     agent = Agent(9999, 9999, 8, 8, 0, AGENT, 90)
     objectivePositions1 = [(160,240),(220,240),(230,280),(170, 320)]
     objectivePositions2 = [(270,190),(250,325),(110,290),(160,170)]
+    # static walkable surface
     objectivePositions3 = [(270,190),(250,325),(110,290),(160,170),(160,240),(220,240),(230,280),(170, 320)]
+    #objectivePositions3 = []
     objective = Gameobject(9800, 9800, 15, 15, 0, OBJECTIVE)
     isAgentLookingAtObjective = False
     spritesLoaded = False
@@ -79,6 +82,8 @@ class Environment():
         self.fakeCollisionMeter = fakeCollisionMeter
         self.doorFakeCollisionMeter = doorFakeCollisionMeter
         self.rooms = []
+        
+        self.walkable_surface = [] 
 
         prologQuery = "use_module(library(clpr))"
 
@@ -127,10 +132,13 @@ class Environment():
         self.agent.sprite.rect.x = self.agentStartX
         self.agent.sprite.rect.y = self.agentStartY
     def resetObjective(self):
+        
+        # TODO get the json room coordinates
         randomNextX = self.objective.sprite.rect.x
         randomNextY = self.objective.sprite.rect.y
         while randomNextX == self.objective.sprite.rect.x and randomNextY == self.objective.sprite.rect.y:
             randomNextPosition = self.objectivePositions3[random.randrange(0,len(self.objectivePositions3))]
+            #randomNextPosition = self.walkable_surface[random.randrange(0,len(self.walkable_surface))]
             randomNextX = randomNextPosition[0]
             randomNextY = randomNextPosition[1]
         self.objective.sprite.rect.x = randomNextX
@@ -610,16 +618,26 @@ class Environment():
         self.screen.blit(self.agent.image, self.agent.sprite.rect)
         #pygame.draw.rect(self.screen, WHITE, self.agent.sprite.rect, 1)
         self.screen.blit(self.objective.sprite.image, self.objective.sprite.rect) 
+    
+    def set_walkable_surface(self, x, y, width, height):
+        
+        rand_pos = random.randint(2, 10)
+        size_w = round(x + (width/rand_pos), 1)
+        size_h = round(y + (height/rand_pos), 1)
+        self.objectivePositions3.append(tuple((size_w,size_h)))
+        print(f'walk surf: {self.walkable_surface}')
         
     def loadModel(self, filePath):
         print(filePath)
         #Numero stanze totali
         with open("./environments/"+filePath, 'r') as infile:
             jsonString = infile.read()
-        print(jsonString)
+        print('-------------  Content JSON --------------------------------')
+        print(f'{jsonString}')
+        print('----------------------------------------------------------')
         deserializedEnvironmentDict = json.loads(jsonString)
         roomNumber = deserializedEnvironmentDict["roomNumber"]
-
+        
         self.envWidth = self.envWidth + (8.5 * roomNumber * self.multiplier)
         self.envHeight = self.envHeight + (8.5 * roomNumber * self.multiplier)
 
@@ -678,12 +696,20 @@ class Environment():
         floorSprite.rect = pygame.Rect(floorDict["x"], floorDict["y"], floorDict["width"], floorDict["height"])
         self.floor = Gameobject(floorDict["x"], floorDict["y"], floorDict["width"], floorDict["height"], floorSprite,
                                 FLOOR)
+        
+        self.objectivePositions3 = []  #TESTtuple
         for i in range(0, roomNumber):
             roomDict = deserializedEnvironmentDict["R"+str(i)]
             roomSprite = pygame.sprite.Sprite()
             roomSprite.image = pygame.transform.scale(self.typeToSprite[roomDict["type"]], (int(roomDict["width"]), int(roomDict["height"])))
             roomSprite.rect = pygame.Rect(roomDict["x"], roomDict["y"], roomDict["width"], roomDict["height"])
             deserializedRoom = Room(roomDict["x"], roomDict["y"], roomDict["width"], roomDict["height"], i, roomSprite, roomDict["type"])
+            
+            print(f'-------- Roomr{i} Coords ---------')
+            print(f'{roomDict["x"]}, {roomDict["y"]}, {roomDict["width"]}, {roomDict["height"]}')
+            self.set_walkable_surface(roomDict["x"], roomDict["y"], roomDict["width"], roomDict["height"])
+            print(f'----------------------------------')
+            
             doorDict = roomDict["door"]
             doorSprite = pygame.sprite.Sprite()
             if doorDict["width"] != 0:
@@ -720,6 +746,7 @@ class Environment():
                     deserializedChildChild = Gameobject(childchildDict["x"], childchildDict["y"], childchildDict["width"], childchildDict["height"], childchildSprite, childchildDict["type"])
                     deserializedChild.children.append(deserializedChildChild)
             self.rooms.append(deserializedRoom)
+            
         #Inizializzazione rect e image dell'agente
         agentSprite = pygame.sprite.Sprite()
         agentSprite.image = pygame.transform.scale(self.typeToSprite[AGENT], (int(self.agent.width), int(self.agent.height)))
