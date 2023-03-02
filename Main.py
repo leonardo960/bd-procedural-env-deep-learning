@@ -81,9 +81,7 @@ class Environment():
         self.prolog = Prolog()
         self.fakeCollisionMeter = fakeCollisionMeter
         self.doorFakeCollisionMeter = doorFakeCollisionMeter
-        self.rooms = []
-        
-        self.walkable_surface = [] 
+        self.rooms = [] 
 
         prologQuery = "use_module(library(clpr))"
 
@@ -138,7 +136,6 @@ class Environment():
         randomNextY = self.objective.sprite.rect.y
         while randomNextX == self.objective.sprite.rect.x and randomNextY == self.objective.sprite.rect.y:
             randomNextPosition = self.objectivePositions3[random.randrange(0,len(self.objectivePositions3))]
-            #randomNextPosition = self.walkable_surface[random.randrange(0,len(self.walkable_surface))]
             randomNextX = randomNextPosition[0]
             randomNextY = randomNextPosition[1]
         self.objective.sprite.rect.x = randomNextX
@@ -625,7 +622,7 @@ class Environment():
         size_w = round(x + (width/rand_pos), 1)
         size_h = round(y + (height/rand_pos), 1)
         self.objectivePositions3.append(tuple((size_w,size_h)))
-        print(f'walk surf: {self.walkable_surface}')
+        print(f'walkable surface: {self.objectivePositions3}')
         
     def loadModel(self, filePath):
         print(filePath)
