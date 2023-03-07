@@ -9,6 +9,7 @@ from utils import Check_Collisions, Agent, Vertex, Room, Game_Object
 
 
 class Environment_Generation:
+    """Class to generate environment"""
     def __init__(self, env_width, env_height, multiplier, fake_collision_mt, door_fake_collision_mt):
         self.env_width = env_width * multiplier
         self.env_height = env_height * multiplier
