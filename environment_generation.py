@@ -73,7 +73,6 @@ class Environment_Generation:
         self.agent.sprite.rect.x = self.agent.x
         self.agent.sprite.rect.y = self.agent.y
         self.screen.blit(self.agent.image, self.agent.sprite.rect)
-        # pygame.draw.rect(self.screen, WHITE, self.agent.sprite.rect, 1)
         self.screen.blit(self.objective.sprite.image, self.objective.sprite.rect)
 
     def display_environment(self, bathroom_no, bedroom_no, kitchen_no, hall_no, mode='view'):

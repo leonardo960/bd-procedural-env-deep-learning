@@ -77,7 +77,7 @@ class Guizero:
         Box(self.generation_env_box1, height=40, grid=[0, 5])
 
         Text(self.generation_env_box1, text="Number of halls:", grid=[0, 6], size=10, bg=self.orange)
-        self.sliderHA = Slider(self.generation_env_box1, horizontal=True, end=2, grid=[1, 6])
+        self.sliderHA = Slider(self.generation_env_box1, horizontal=True, start=1, end=1, grid=[1, 6])
         self.sliderHA.__setattr__("bg", self.orange)
 
         Text(self.generation_env_box2, text="MAX tables:", grid=[0, 7], size=10, bg=self.orange)

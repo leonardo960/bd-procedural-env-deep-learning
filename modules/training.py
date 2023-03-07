@@ -14,7 +14,7 @@ def runTraining(self):
     frames = 6000
     #for i in range(1,10001): #10k episodi
     for i in range(1,101): #1k episodi
-        self.screen = pygame.display.set_mode((int(self.envWidth), int(self.envHeight)))
+        self.screen = pygame.display.set_mode((int(self.env_width), int(self.env_height)))
         #pygame.init()
         #self.reset()
         #self.generateEnvironment(2, 2, 2, 2)
@@ -22,8 +22,8 @@ def runTraining(self):
         #pygame.display.set_caption("Agent Training Episode {}/{}".format(i,10000))
         done = False
         frameCount = 0
-        self.resetAgent()
-        self.resetObjective()
+        self.reset_agent()
+        self.reset_objective()
         state = numpy.reshape(self.projectSegments(), [1,state_size,3])
         lastDistFromSpawn = 0
         randomActions = 0
@@ -71,7 +71,7 @@ def runTraining(self):
                     elif self.agent.targetRot == 315:
                         self.agent.x += speed
                         self.agent.y += speed
-                self.drawModel()
+                self.draw_model()
                 pygame.display.update()
                 if self.isAgentColliding():
                     currentMinDistance = state[0][0][1]
@@ -94,7 +94,7 @@ def runTraining(self):
                 #assegno reward
                 reward = 0
                 if self.agent.sprite.rect.colliderect(self.objective.sprite.rect): #spostato da isAgentColliding per cambiare reward
-                    self.resetObjective()
+                    self.reset_objective()
                     reward += 1
                 next_state = numpy.reshape(self.projectSegments(), [1,state_size,3])
                 #reward += wasDistFromSpawnUpdated
