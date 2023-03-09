@@ -1,4 +1,8 @@
-import pygame
+"""
+    Reinforcement Learning of an Agent in Procedural Environments
+    https://github.com/AAAI-DISIM-UnivAQ/bd-procedural-env-deep-learning
+"""
+
 from guizero import App, ListBox, PushButton, Box, Text, info, Slider
 from environment_generation import Environment_Generation
 from os import listdir
@@ -99,7 +103,7 @@ class Guizero:
 
         Box(self.train_box_view, height=40, width=50, grid=[0, 0])
         view_button_box2 = Box(self.train_box_view, layout="grid", grid=[0, 2])
-        #PushButton(view_button_box2, command=self.train_cmd, text="Train", grid=[0, 0])
+        # PushButton(view_button_box2, command=self.train_cmd, text="Train", grid=[0, 0])
         PushButton(view_button_box2, command=self.view_train_back_cmd, text="Back", grid=[1, 0])
 
         self.app.display()
@@ -147,17 +151,15 @@ class Guizero:
         self.environment.display_environment(self.sliderBAR.value, self.sliderBR.value, self.sliderKI.value,
                                              self.sliderHA.value, mode="generate")
 
-   # def train_cmd(self):
-   #     self.environment.loadModel(self.listbox2.value)
-   #     self.environment.runTraining()
+    # def train_cmd(self):
+    #     self.environment.loadModel(self.listbox2.value)
+    #     self.environment.runTraining()
 
     def view_train_back_cmd(self):
         self.train_box_view.hide()
         self.menu_box.show()
 
 
-pygame.init()
-pygame.display.set_caption("Environment Generator")
-
-environment = Environment_Generation(15.0, 15.0, 8.5, 2.5, 1.5)
-Guizero(environment)
+if __name__ == "__main__":
+    my_env = Environment_Generation(15.0, 15.0, 8.5, 2.5, 1.5)
+    Guizero(my_env)

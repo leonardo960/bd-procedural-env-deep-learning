@@ -89,7 +89,11 @@ class Environment_Generation:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    pygame.quit()
+                    try:
+                        pygame.display.quit()
+                        # pygame.quit()
+                    except Exception as e:
+                        print(e)
                     self.reset()
             if not running:
                 break
@@ -195,7 +199,8 @@ class Environment_Generation:
             if frames == 0:
                 running = False
                 print(f"score achieved: {str(score)}")
-        pygame.quit()
+        pygame.display.quit()
+        # pygame.quit()
 
     def reset_objective(self):
         random_next_x = self.objective.sprite.rect.x
