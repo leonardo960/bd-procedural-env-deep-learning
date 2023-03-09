@@ -20,8 +20,8 @@ class Guizero:
         Box(self.menu_box, height=50, width=800, grid=[0, 0])
         Box(self.menu_box, height=20, width=800, grid=[0, 2])
         Box(self.menu_box, height=20, width=800, grid=[0, 4])
-        PushButton(self.menu_box, command=self.sight_environments_cmd, text="Visualize environments generated",
-                   width=30,
+        PushButton(self.menu_box, command=self.sight_environments_cmd, text="Visualize generated environments",
+                   width=40,
                    height=1, grid=[0, 1])
         PushButton(self.menu_box, command=self.go_to_sight_generation_cmd, text="Generate new environments", width=30,
                    height=1, grid=[0, 3])
@@ -32,7 +32,7 @@ class Guizero:
         self.listbox = ListBox(self.env_view_box, items=env_files, scrollbar=True, width=350, height=350, grid=[0, 1])
 
         Box(self.env_view_box, height=40, width=50, grid=[0, 0])
-        view_button_box = Box(self.env_view_box, height=40, width=50, layout="grid", grid=[0, 2])
+        view_button_box = Box(self.env_view_box, height=40, width=300, layout="grid", grid=[0, 2])
         PushButton(view_button_box, command=self.view_cmd, text="Visualize", grid=[0, 0])
         PushButton(view_button_box, command=self.view_env_back_cmd, text="Back", grid=[1, 0])
 
