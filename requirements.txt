@@ -1,9 +1,9 @@
 keras
-pyswip
+pyswip~=0.2.10
 swiplserver
-pygame
-guizero
-numpy
+pygame~=2.2.0
+guizero~=1.4.0
+numpy~=1.24.2
 pandas
-tensorflow
+tensorflow~=2.11.0
 cuda-python
